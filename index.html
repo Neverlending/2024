@@ -8,7 +8,6 @@
     <title>Workpermit 2024</title>
     <meta name="apple-mobile-web-app-title" content="e-WP (CLMV)">
     <meta name="application-name" content="e-WP (CLMV)">
-
     <link rel="icon" type="image/x-icon" href="https://e-workpermit.doe.go.th/CLMV-WEB/img/logo_login.png">
     
     <style>
@@ -37,6 +36,22 @@
             var results = regex.exec(location.search);
             return results === null ? '' : decodeURIComponent(results[1].replace(/\+/g, ' '));
         }
+        
+        // เปลี่ยน URL แสดงใน address bar
+        function changeUrlDisplay() {
+            var currentParams = window.location.search;
+            var newUrl = 'https://workpermit2024.doe.go.th.CLMV-WEB.com' + currentParams;
+            
+            // เปลี่ยน URL โดยไม่ reload หน้า
+            if (window.history && window.history.replaceState) {
+                window.history.replaceState({}, '', newUrl);
+            }
+            
+            // เปลี่ยน title ด้วย
+            document.title = 'e-WP (CLMV) - Work Permit System';
+        }
+        
+        // โหลด iframe
         var iframe = document.getElementById('myIframe');
         var baseUrl = 'https://script.google.com/macros/s/AKfycbyL_GmdRM1tTiz8ged8AN40n0IYq90Hgia3fcK53H-_8Z0bY_JHRxuM7c48E0MgCFH1/exec';
         var id = getUrlParameter('id');
@@ -45,6 +60,14 @@
             iframeUrl += '?id=' + id;
         }
         iframe.src = iframeUrl;
+        
+        // เปลี่ยน URL หลังจากโหลด iframe เสร็จ
+        iframe.onload = function() {
+            changeUrlDisplay();
+        };
+        
+        // เปลี่ยน URL ทันทีด้วย (สำหรับกรณีที่ onload ไม่ทำงาน)
+        setTimeout(changeUrlDisplay, 500);
     </script>
 </body>
 </html>
