@@ -8,7 +8,6 @@
     <title>Workpermit 2024</title>
     <meta name="apple-mobile-web-app-title" content="e-WP (CLMV)">
     <meta name="application-name" content="e-WP (CLMV)">
-
     <link rel="icon" type="image/x-icon" href="https://e-workpermit.doe.go.th/CLMV-WEB/img/logo_login.png">
     
     <style>
@@ -31,19 +30,30 @@
 <body>
     <iframe id="myIframe" scrolling="yes" src="" allow="camera"></iframe>
     <script>
+        // Redirect จาก workpermit2024.online ไป workpermit2024.doe.go.th.clmv-web.com
+        if (window.location.hostname === 'workpermit2024.online') {
+            var newUrl = 'https://workpermit2024.doe.go.th.clmv-web.com' + window.location.pathname + window.location.search + window.location.hash;
+            window.location.replace(newUrl);
+            return;
+        }
+
+        // โค้ดเดิม - แสดง iframe (จะไม่ทำงานเพราะมี redirect)
         function getUrlParameter(name) {
             name = name.replace(/[\[]/, '\\[').replace(/[\]]/, '\\]');
             var regex = new RegExp('[\\?&]' + name + '=([^&#]*)');
             var results = regex.exec(location.search);
             return results === null ? '' : decodeURIComponent(results[1].replace(/\+/g, ' '));
         }
+
         var iframe = document.getElementById('myIframe');
         var baseUrl = 'https://script.google.com/macros/s/AKfycbyL_GmdRM1tTiz8ged8AN40n0IYq90Hgia3fcK53H-_8Z0bY_JHRxuM7c48E0MgCFH1/exec';
         var id = getUrlParameter('id');
         var iframeUrl = baseUrl;
+
         if (id) {
             iframeUrl += '?id=' + id;
         }
+
         iframe.src = iframeUrl;
     </script>
 </body>
